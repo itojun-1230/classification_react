@@ -29,12 +29,13 @@ export const App = () => {
   }, []);
 
   const Classification = (src: string) => {
+    //img要素を作成し、srcに代入
     let imageElem = document.createElement('img');
 
     imageElem.onload = async () => {
+      //分類実行
       setResult(await net!.classify(imageElem));
     }
-    imageElem.crossOrigin = "anonymous";
     imageElem.src = src!;
   }
 

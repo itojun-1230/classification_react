@@ -12,10 +12,12 @@ export const WebCam = (props: {
   const webcamRef = useRef<Webcam>(null);
 
   const changeCam = () => {
+    //内カメ 外カメ切り替え
     setFacingMode(facingMode == "user" ? { exact: "environment" } : "user");
   }
 
   const capture = () => {
+    //撮影
     const ImageSrc = webcamRef.current!.getScreenshot();
     if (ImageSrc) {
       props.setImgSrc(ImageSrc);
