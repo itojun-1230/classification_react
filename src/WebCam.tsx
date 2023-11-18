@@ -1,9 +1,11 @@
 import { useRef, useState } from "react";
 import Webcam from "react-webcam";
+import { resultType } from "./Result";
 
 export const WebCam = (props: {
   imgSrc: string | undefined,
   setImgSrc: React.Dispatch<React.SetStateAction<string | undefined>>,
+  setResult: React.Dispatch<React.SetStateAction<resultType[]>>,
   Classification: (src: string) => void
 }) => {
   const [facingMode, setFacingMode] = useState<ConstrainDOMString>("user");
@@ -21,11 +23,16 @@ export const WebCam = (props: {
     }
   }
 
+  const reset = () => {
+    props.setResult([]);
+    props.setImgSrc(undefined);
+  }
+
   return (
     <>
       {props.imgSrc ? (
         <>
-          <button onClick={() => props.setImgSrc(undefined)}>リセット</button >
+          <button onClick={reset}>リセット</button >
           <img
             src={props.imgSrc}
             width={200}

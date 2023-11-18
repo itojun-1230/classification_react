@@ -1,23 +1,20 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as mobilenet from "@tensorflow-models/mobilenet";
 import * as tf from "@tensorflow/tfjs";
-import Webcam from 'react-webcam';
 import { WebCam } from './WebCam';
+import { Result, resultType } from './Result';
 
-type resultType = {
-  className: string,
-  probablity: number
-}
+import style from "./app.module.css"
 
 export const App = () => {
 
   const [net, setNet] = useState<mobilenet.MobileNet>();
   const [imgSrc, setImgSrc] = useState<string>();
-  const [result, setResult] = useState<resultType>();
+  const [result, setResult] = useState<resultType[]>([]);
 
 
   useEffect(() => { //初期実行時二回実行されるが、問題なし
-    if( tf.getBackend() ) { //すでにバックエンドが定義されている場合、return
+    if (tf.getBackend()) { //すでにバックエンドが定義されている場合、return
       return;
     }
     const initLoad = async () => {
@@ -31,22 +28,37 @@ export const App = () => {
     initLoad();
   }, []);
 
-  const Classification = () => {
+  const Classification = (src: string) => {
+    let imageElem = document.createElement('img');
 
+    imageElem.onload = async () => {
+      setResult(await net!.classify(imageElem));
+    }
+    imageElem.crossOrigin = "anonymous";
+    imageElem.src = src!;
   }
 
   return (
     <>
-      { net ? (
-        <>
-          <WebCam imgSrc={imgSrc} setImgSrc={setImgSrc} Classification={Classification} />
-        </>
+      {net ? (
+        <div className={style.main_div}>
+          <div className={style.content}>
+            <WebCam 
+              imgSrc={imgSrc} setImgSrc={setImgSrc}
+              setResult={setResult}   
+              Classification={Classification}
+            />
+          </div>
+          <div className={style.content}>
+            <Result result={result}/>
+          </div>
+        </div>
       ) : (
         <>
-        <p>Now Loading...</p>
+          <p>Now Loading...</p>
         </>
       )
-    }
+      }
     </>
   )
 }
